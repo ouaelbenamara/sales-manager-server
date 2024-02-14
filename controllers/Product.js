@@ -8,7 +8,8 @@ const productsController = async (req, res) => {
         _id: product._id,
         productName: product.productName,
         picture: product.productPicture,
-        price:product.price
+        price:product.price,
+        count:product.count
     }))
     if (!respons) {
         return res.status(500).send('<h1>error while retrieving products</h1>')
@@ -30,7 +31,8 @@ const singleProductController = async (req, res) => {
         _id: respons._id,
         productName: respons.productName,
         picture: respons.productPicture,
-        price: respons.price
+        price: respons.price,
+        count: respons.count
     }
     // console.log(product)
     res.status(200).json(product)
@@ -54,7 +56,7 @@ const deleteProductController = async (req, res) => {
 const updateProductController = async (req, res) => {
     let respons
     const productId = req.params.productId;
-    const { productName, productPicture, price } = req.body;
+    const { productName, productPicture, price,count } = req.body;
     if (!productId) {
         return res.status(500).send("productId to update is required")
     }
@@ -66,6 +68,9 @@ const updateProductController = async (req, res) => {
 
     } else if (price) {
         respons = await updateProduct({ productId, price });
+    }else if(count){
+        respons = await updateProduct({ productId, count });
+
     }
     // console.log(respons)
     if (!respons) {

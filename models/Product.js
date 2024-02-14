@@ -1,7 +1,7 @@
 const Product = require("../schema/Product")
 
 
-const addNewProduct =async ({ productName, productPicture, price })=>{
+const addNewProduct =async ({ productName, productPicture, price,count })=>{
     if (!productName || !productPicture || !price){
         return false
     }
@@ -9,7 +9,8 @@ const addNewProduct =async ({ productName, productPicture, price })=>{
         const newProduct = new Product({
             productName,
             productPicture,
-            price
+            price,
+            count
         })
       return  await  newProduct.save()
     }catch(err){
@@ -35,7 +36,7 @@ const deleteProduct = async ({ productIdToDelete })=>{
 }
 
 
-async function updateProduct({ productId,productName,productPicture,price }) {
+async function updateProduct({ productId,productName,productPicture,price ,count}) {
     try {
         let updateObject = {};
         // console.log(id)
@@ -49,6 +50,9 @@ async function updateProduct({ productId,productName,productPicture,price }) {
 
         if (price !== undefined) {
             updateObject.price = price;
+        }
+        if (count !== undefined) {
+            updateObject.count = count;
         }
 
     
