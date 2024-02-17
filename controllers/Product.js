@@ -1,13 +1,14 @@
 
 const { addNewProduct, deleteProduct, updateProduct, getProducts, getProduct,  } = require('../models/Product');
 
-
 const productsController = async (req, res) => {
     let respons = await getProducts();
+
+
     respons = respons.map(product => ({
         _id: product._id,
         productName: product.productName,
-        picture: product.productPicture,
+        picture: `http://localhost:5000/db/${product.productPicture}`, // Construct the URL to the image
         price:product.price,
         count:product.count
     }))
@@ -50,7 +51,7 @@ const deleteProductController = async (req, res) => {
         return res.status(500).send("error while deleting product")
     }
 
-    res.send('<h1>product deleted seccussfuly</h1>')
+    res.status(200).json({message:'product deleted seccussfuly'})
 }
 
 const updateProductController = async (req, res) => {
@@ -81,17 +82,21 @@ const updateProductController = async (req, res) => {
 }
 
 const addProductController = async(req,res)=>{
-    
-    const {productName,productPicture,price} = req.body
-    if (!productName|| !productPicture|| !price){
+console.log('BODYY',req.body,'FILELL',req.file)
+    const { filename } = req.file;
+console.log(filename)
+    const { productName, price,count } = req.body
+    if (!productName  || !price||!filename){
+        console.log("consoles",productName, price,count)
         return res.status(501).json({success:false,message:'all fields are required'})
     }
 
-    const respons = await addNewProduct({ productName, productPicture, price })
+    const respons = await addNewProduct({ productName, price,count,filename })
    if(!respons){
        return res.status(501).json({ success: false, message: 'error while addding new product' })
 
    }
+   
 
     res.status(200).json(respons)
     

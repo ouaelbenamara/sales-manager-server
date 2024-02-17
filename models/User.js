@@ -107,6 +107,18 @@ const getUser = async (userId) => {
     return user;
 
 }
+const getUserByEmail = async (email) => {
+    let user;
+    try {
+        user = await User.findOne({email:email});
+
+    } catch (e) {
+        console.log('error while finding the user on the database', e)
+        return false;
+    }
+    return user;
+
+}
 
 
 
@@ -116,6 +128,8 @@ module.exports = {
     deleteUser,
     updateUser,
     getUsers,
+    getUserByEmail,
+
     getUser
 
 }

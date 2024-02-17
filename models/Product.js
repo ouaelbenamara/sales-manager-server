@@ -1,42 +1,81 @@
-const Product = require("../schema/Product")
+const Product = require("../schema/Product");
+const { addNewPictureBase65, getItemsPicturesBase65 } = require('../services/jsonManager')
+const { base64ToBinary } = require('../lib/utils')
+const fs = require('fs');
+const path = require('path');
 
+const addNewProduct = async ({ productName, price, count, filename }) => {
+    if (!productName || !price  || count === undefined) {
+        console.log('false')
 
-const addNewProduct =async ({ productName, productPicture, price,count })=>{
-    if (!productName || !productPicture || !price){
-        return false
-    }
-    try{
-        const newProduct = new Product({
-            productName,
-            productPicture,
-            price,
-            count
-        })
-      return  await  newProduct.save()
-    }catch(err){
-        console.log(err)
-        return false
-    }
-
-}
-const deleteProduct = async ({ productIdToDelete })=>{
-    if (!productIdToDelete){
-        return false
-    }
-    try {
-        const deletedUser = await Product.findByIdAndDelete(productIdToDelete);
-        // console.log(deletedUser);
-    } catch (e) {
-        console.log('error while finding a product on the database', e)
         return false;
     }
-    return true
 
 
-}
+
+    try {
 
 
-async function updateProduct({ productId,productName,productPicture,price ,count}) {
+        const newProduct = new Product({
+            productName,
+            productPicture: filename,
+            price,
+            count
+        });
+
+        const res = await newProduct.save();
+
+
+
+        // Save the image file to a folder
+        // const imagePath = path.join(__dirname, 'your_image_folder', `${newProduct._id}.jpg`); // Adjust the folder name and file extension as needed
+        // fs.writeFileSync(imagePath, imageBuffer);
+
+        return res
+    } catch (err) {
+        console.error(err);
+        return false;
+    }
+};
+
+const deleteProduct = async ({ productIdToDelete }) => {
+    if (!productIdToDelete) {
+        return false;
+    }
+
+    try {
+        // Find the product first to get the productPicture
+        const productToDelete = await Product.findById(productIdToDelete);
+
+        if (!productToDelete) {
+            console.log('Product not found.');
+            return false;
+        }
+
+        // Delete the product
+        const deletedProduct = await Product.deleteOne({ _id: productIdToDelete });
+
+        if (deletedProduct.deletedCount > 0) {
+            // // If the product is found and deleted, remove the corresponding image file
+            // const imagePath = `./db/${productToDelete.productPicture}`;
+
+            // await fs.unlink(imagePath); // Delete the file
+
+            console.log(`Product ${productIdToDelete} and Image ${productToDelete.productPicture} deleted successfully.`);
+        } else {
+            console.log('Product not deleted.');
+            return false;
+        }
+    } catch (e) {
+        console.log('Error while deleting a product from the database', e);
+        return false;
+    }
+
+    return true;
+};
+
+
+async function updateProduct({ productId, productName, productPicture, price, count }) {
     try {
         let updateObject = {};
         // console.log(id)
@@ -55,7 +94,7 @@ async function updateProduct({ productId,productName,productPicture,price ,count
             updateObject.count = count;
         }
 
-    
+
 
         const updatedProduct = await Product.findByIdAndUpdate(productId, { $set: updateObject }, { new: true });
         // console.log(updatedUser);
@@ -67,7 +106,7 @@ async function updateProduct({ productId,productName,productPicture,price ,count
     }
 }
 
-const getProducts =async ()=>{
+const getProducts = async () => {
 
     let products;
     try {

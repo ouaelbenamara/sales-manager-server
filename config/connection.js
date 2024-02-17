@@ -18,9 +18,13 @@ try {
         console.error('MongoDB connection error:', error.message);
     });
 
+
     db.once('open', function () {
+
         console.log('Connected to MongoDB!');
     });
+
+
 
     // Additional event listener for when the connection is closed
     mongoose.connection.on('disconnected', function () {
