@@ -14,15 +14,16 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const { productsController, singleProductController, addProductController, updateProductController, deleteProductController } = require('../controllers/Product')
+const { productsController, singleProductController, addProductController, updateProductController, deleteProductController } = require('../controllers/Product');
+const { authenticate } = require('../config/authenticationStrategy');
 
 //////////////
-router.get('/' ,productsController)
-    .get('/product/:productId',singleProductController)
+router.get('/', authenticate,productsController)
+    .get('/product/:productId', authenticate, singleProductController)
     // .post('/user/:userId/editPassword', editPasswordController)
-    .post('/addProduct', upload.single('image'),addProductController)
-    .put('/updatetProduct/:productId', updateProductController)
-    .delete('/removeProduct/:productId', deleteProductController)
+    .post('/addProduct', authenticate, upload.single('image'),addProductController)
+    .put('/updatetProduct/:productId', authenticate, updateProductController)
+    .delete('/removeProduct/:productId', authenticate, deleteProductController)
     // .get('getTurnover',getTurnoverController)
 
     .all('/*', (req, res) => {

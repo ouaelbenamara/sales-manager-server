@@ -19,10 +19,7 @@ try {
     });
 
 
-    db.once('open', function () {
 
-        console.log('Connected to MongoDB!');
-    });
 
 
 
@@ -42,3 +39,4 @@ try {
 } catch (error) {
     console.error('Error connecting to MongoDB:', error.message);
 }
+module.exports = mongoose.connection;

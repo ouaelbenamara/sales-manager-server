@@ -1,12 +1,12 @@
 const Product = require("../schema/Product");
-const { addNewPictureBase65, getItemsPicturesBase65 } = require('../services/jsonManager')
-const { base64ToBinary } = require('../lib/utils')
 const fs = require('fs');
 const path = require('path');
 
 const addNewProduct = async ({ productName, price, count, filename }) => {
-    if (!productName || !price  || count === undefined) {
+    console.log(productName,!productName,'asd',)
+    if (productName==undefined || price===undefined  || count === undefined) {
         console.log('false')
+        console.log(count,'dalse')
 
         return false;
     }
@@ -33,7 +33,7 @@ const addNewProduct = async ({ productName, price, count, filename }) => {
 
         return res
     } catch (err) {
-        console.error(err);
+        console.error('error',err);
         return false;
     }
 };
@@ -57,11 +57,16 @@ const deleteProduct = async ({ productIdToDelete }) => {
 
         if (deletedProduct.deletedCount > 0) {
             // // If the product is found and deleted, remove the corresponding image file
-            // const imagePath = `./db/${productToDelete.productPicture}`;
+            const imagePath = `./db/${productToDelete.productPicture}`;
+  
+             fs.unlink(imagePath,(err) => {
+    if (err) {
+        console.error(`Error deleting file: ${err.message}`);
+    } else {
+        console.log('File deleted successfully');
+    }
+}); // Delete the file
 
-            // await fs.unlink(imagePath); // Delete the file
-
-            console.log(`Product ${productIdToDelete} and Image ${productToDelete.productPicture} deleted successfully.`);
         } else {
             console.log('Product not deleted.');
             return false;
@@ -75,31 +80,28 @@ const deleteProduct = async ({ productIdToDelete }) => {
 };
 
 
-async function updateProduct({ productId, productName, productPicture, price, count }) {
+async function updateProduct({ productId, productName=null, productPicture=null, price=null, count=null }) {
     try {
         let updateObject = {};
-        // console.log(id)
-        if (productName !== undefined) {
+        if (productName !== null) {
             updateObject.productName = productName;
         }
 
-        if (productPicture !== undefined) {
+        if (productPicture !== null) {
             updateObject.productPicture = productPicture;
         }
 
-        if (price !== undefined) {
+        if (price !== null) {
             updateObject.price = price;
         }
-        if (count !== undefined) {
+        if (count !== null) {
             updateObject.count = count;
         }
 
 
-
         const updatedProduct = await Product.findByIdAndUpdate(productId, { $set: updateObject }, { new: true });
-        // console.log(updatedUser);
 
-        return true;
+        return updatedProduct;
     } catch (error) {
         console.log('Error while updating product on the database', error);
         return false;

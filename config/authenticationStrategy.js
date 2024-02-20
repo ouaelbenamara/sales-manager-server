@@ -8,7 +8,7 @@ const SECRET_KEY = process.env.SECRET_KEY;
 
 const authenticate = async(req, res, next) => {
     try{
-// console.log('entered the auth')
+console.log('entered the auth')
     
     const token = tokenFromCookie(req);
     // console.log(token)

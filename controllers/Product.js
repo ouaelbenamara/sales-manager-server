@@ -1,14 +1,15 @@
 
 const { addNewProduct, deleteProduct, updateProduct, getProducts, getProduct,  } = require('../models/Product');
-
+require('dotenv').config();
+const PICTURE_URI = process.env.PICTURE_URI;
 const productsController = async (req, res) => {
     let respons = await getProducts();
 
 
-    respons = respons.map(product => ({
+    respons = respons?.map(product => ({
         _id: product._id,
         productName: product.productName,
-        picture: `http://localhost:5000/db/${product.productPicture}`, // Construct the URL to the image
+        productPicture: `${PICTURE_URI+product.productPicture}`, // Construct the URL to the image
         price:product.price,
         count:product.count
     }))
@@ -27,15 +28,13 @@ const singleProductController = async (req, res) => {
     }
 
     const respons = await getProduct(productId)
-    // console.log(productId)
     const product = {
         _id: respons._id,
         productName: respons.productName,
-        picture: respons.productPicture,
+        productPicture: `${PICTURE_URI + respons.productPicture}`,
         price: respons.price,
         count: respons.count
     }
-    // console.log(product)
     res.status(200).json(product)
 }
 
@@ -46,7 +45,6 @@ const deleteProductController = async (req, res) => {
         return res.status(500).send("productId to delete is required")
     }
     const respons = await deleteProduct({ productIdToDelete: productId });
-    // console.log(respons)
     if (!respons) {
         return res.status(500).send("error while deleting product")
     }
@@ -61,47 +59,38 @@ const updateProductController = async (req, res) => {
     if (!productId) {
         return res.status(500).send("productId to update is required")
     }
-    if (productName) {
-        // console.log(hash, salt)
-        respons = await updateProduct({  productName, productId });
-    } else if (productPicture) {
-        respons = await updateProduct({ productId, productPicture });
 
-    } else if (price) {
-        respons = await updateProduct({ productId, price });
-    }else if(count){
-        respons = await updateProduct({ productId, count });
+    respons = await updateProduct({ productName, productId, productPicture, price, count });
 
-    }
-    // console.log(respons)
     if (!respons) {
         return res.status(500).json({ success: false, message: "error while updating product" })
     }
-    // console.log(respons)
-    res.status(200).json({ success: true, message: 'product updated successfully' })
+    res.status(200).json({ ...respons?._doc, productPicture: `${PICTURE_URI + respons._doc.productPicture}` })
 }
 
-const addProductController = async(req,res)=>{
-console.log('BODYY',req.body,'FILELL',req.file)
-    const { filename } = req.file;
-console.log(filename)
-    const { productName, price,count } = req.body
-    if (!productName  || !price||!filename){
-        console.log("consoles",productName, price,count)
-        return res.status(501).json({success:false,message:'all fields are required'})
+const addProductController = async (req, res) => {
+  
+   const { filename } = req?.file;
+  
+  
+
+    const { productName, price, count } = req.body;
+
+    // Check if any of the required fields is undefined
+    if (productName === 'undefined' || price === 'undefined' || count === 'undefined' || filename === 'undefined'||
+    !productName  || !price || !count || !filename 
+    ) {
+        return res.status(501).json({ success: false, message: 'All fields are required' });
     }
 
-    const respons = await addNewProduct({ productName, price,count,filename })
-   if(!respons){
-       return res.status(501).json({ success: false, message: 'error while addding new product' })
+    const respons = await addNewProduct({ productName, price, count, filename });
 
-   }
-   
+    if (!respons) {
+        return res.status(502).json({ success: false, message: 'Error while adding new product' });
+    }
 
-    res.status(200).json(respons)
-    
-
-}
+    res.status(200).json({ ...respons._doc, productPicture: `${PICTURE_URI + respons._doc.productPicture}` });
+};
 
 
 
