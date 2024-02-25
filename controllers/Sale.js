@@ -49,12 +49,12 @@ const deleteSaleController = async (req, res) => {
 const updateSaleController = async (req, res) => {
     let respons
     const saleId = req.params.saleId;
-    const { saleName, price, count } = req.body;
+    const { saleName, price, count, buyPrice } = req.body;
     if (!saleId) {
         return res.status(500).send("saleId to update is required")
     }
 
-    respons = await updateSale({ saleName, saleId, price, count });
+    respons = await updateSale({ saleName, saleId, price, count, buyPrice });
 
     if (!respons) {
         return res.status(500).json({ success: false, message: "error while updating sale" })
@@ -65,18 +65,19 @@ const updateSaleController = async (req, res) => {
 const addSaleController = async (req, res) => {
 
 
-
-
-    const { saleName, price, count } = req.body;
-
+console.log(req.body)
+    const { saleName, price, count, buyPrice ,createdAt} = req.body;
+    // console.log('here', saleName, price, count, buyPrice)
     // Check if any of the required fields is undefined
-    if (saleName === 'undefined' || price === 'undefined' || count === 'undefined' ||
-        !saleName || !price || !count 
+    if (saleName === 'undefined' || price === 'undefined' || count === 'undefined' || buyPrice === 'undefined'||
+        saleName === null || price === null || count === null || buyPrice===null
     ) {
+        
+
         return res.status(501).json({ success: false, message: 'All fields are required' });
     }
-
-    const respons = await addNewSale({ saleName, price, count });
+console.log('created at,',createdAt)
+    const respons = await addNewSale({ saleName, price, count,buyPrice,createdAt });
 
     if (!respons) {
         return res.status(502).json({ success: false, message: 'Error while adding new sale' });

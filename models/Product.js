@@ -2,11 +2,12 @@ const Product = require("../schema/Product");
 const fs = require('fs');
 const path = require('path');
 
-const addNewProduct = async ({ productName, price, count, filename }) => {
+const addNewProduct = async ({ productName, price, buyPrice,count, filename }) => {
     console.log(productName,!productName,'asd',)
-    if (productName==undefined || price===undefined  || count === undefined) {
-        console.log('false')
-        console.log(count,'dalse')
+    if (productName == undefined || price === undefined || count === undefined || buyPrice===undefined||
+        !productName || !price || !count || !buyPrice
+        ) {
+
 
         return false;
     }
@@ -20,6 +21,7 @@ const addNewProduct = async ({ productName, price, count, filename }) => {
             productName,
             productPicture: filename,
             price,
+            buyPrice,
             count
         });
 
@@ -80,11 +82,14 @@ const deleteProduct = async ({ productIdToDelete }) => {
 };
 
 
-async function updateProduct({ productId, productName=null, productPicture=null, price=null, count=null }) {
+async function updateProduct({ productId, productName=null, productPicture=null, price=null, count=null,buyPrice=null }) {
     try {
         let updateObject = {};
         if (productName !== null) {
             updateObject.productName = productName;
+        }
+        if (buyPrice !== null) {
+            updateObject.buyPrice = buyPrice;
         }
 
         if (productPicture !== null) {

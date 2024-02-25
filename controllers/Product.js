@@ -11,7 +11,8 @@ const productsController = async (req, res) => {
         productName: product.productName,
         productPicture: `${PICTURE_URI+product.productPicture}`, // Construct the URL to the image
         price:product.price,
-        count:product.count
+        count:product.count,
+        buyPrice: product.buyPrice
     }))
     if (!respons) {
         return res.status(500).send('<h1>error while retrieving products</h1>')
@@ -55,12 +56,12 @@ const deleteProductController = async (req, res) => {
 const updateProductController = async (req, res) => {
     let respons
     const productId = req.params.productId;
-    const { productName, productPicture, price,count } = req.body;
+    const { productName, productPicture, price, count, buyPrice } = req.body;
     if (!productId) {
         return res.status(500).send("productId to update is required")
     }
 
-    respons = await updateProduct({ productName, productId, productPicture, price, count });
+    respons = await updateProduct({ productName, productId, productPicture, price, count, buyPrice });
 
     if (!respons) {
         return res.status(500).json({ success: false, message: "error while updating product" })
@@ -74,16 +75,16 @@ const addProductController = async (req, res) => {
   
   
 
-    const { productName, price, count } = req.body;
+    const { productName, price, count, buyPrice } = req.body;
 
     // Check if any of the required fields is undefined
-    if (productName === 'undefined' || price === 'undefined' || count === 'undefined' || filename === 'undefined'||
-    !productName  || !price || !count || !filename 
+    if (productName === 'undefined' || price === 'undefined' || count === 'undefined' || filename === 'undefined' || buyPrice === 'undefined' ||
+    !productName  || !price || !count || !filename ||!buyPrice
     ) {
         return res.status(501).json({ success: false, message: 'All fields are required' });
     }
 
-    const respons = await addNewProduct({ productName, price, count, filename });
+    const respons = await addNewProduct({ productName, price, count, filename, buyPrice });
 
     if (!respons) {
         return res.status(502).json({ success: false, message: 'Error while adding new product' });

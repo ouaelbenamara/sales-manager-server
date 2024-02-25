@@ -3,40 +3,53 @@ require('dotenv').config();
 
 const DB_URI = process.env.DB_URI;
 
-// Add a generic error handler for uncaught exceptions
-process.on('uncaughtException', (error) => {
-    console.error('Uncaught Exception:', error.message);
-    process.exit(1); // Exit with a non-zero code to indicate an error
-});
-
-// Use a try-catch block to handle connection errors
-try {
+// Function to connect to the database
+const connectToDatabase = () => {
     mongoose.connect(DB_URI);
 
     const db = mongoose.connection;
+
+    // Event listener for connection errors
     db.on('error', function (error) {
         console.error('MongoDB connection error:', error.message);
+        // Attempt to restart the process
+        console.log('restarting the server')
+        startServer();
     });
 
-
-
-
-
-
-    // Additional event listener for when the connection is closed
+    // Event listener for when the connection is closed
     mongoose.connection.on('disconnected', function () {
         console.log('MongoDB connection disconnected');
     });
 
-    // Additional event listener for handling SIGINT (Ctrl+C) to close the connection
+    // Event listener for handling SIGINT (Ctrl+C) to close the connection
     process.on('SIGINT', function () {
         mongoose.connection.close(function () {
             console.log('MongoDB connection disconnected through app termination');
             process.exit(0);
         });
     });
+};
 
-} catch (error) {
-    console.error('Error connecting to MongoDB:', error.message);
-}
+// Function to start the server
+const startServer = () => {
+    try {
+        // Add a generic error handler for uncaught exceptions
+        process.on('uncaughtException', (error) => {
+            console.error('Uncaught Exception:', error.message);
+            // Attempt to restart the process
+            startServer();
+        });
+
+        // Connect to the database
+        connectToDatabase();
+
+    } catch (error) {
+        console.error('Error connecting to MongoDB:', error.message);
+    }
+};
+
+// Start the server
+startServer();
+
 module.exports = mongoose.connection;
