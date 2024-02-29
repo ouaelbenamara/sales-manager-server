@@ -1,5 +1,5 @@
 
-const { addNewSale, deleteSale, updateSale, getSales, getSale, } = require('../models/Sale');
+const { addNewSale, deleteSale, updateSale, getSales, deleteSales, } = require('../models/Sale');
 require('dotenv').config();
 
 const salesController = async (req, res) => {
@@ -34,11 +34,12 @@ const salesController = async (req, res) => {
 
 
 const deleteSaleController = async (req, res) => {
-    const saleId = req.params.saleId;
-    if (!saleId) {
-        return res.status(500).json({success:false,message:"saleId to delete is required"})
+    const {saleIds} = req.body
+    
+    if (!saleIds || saleIds?.length ===0) {
+        return res.status(500).json({success:false,message:"saleIds to delete are required"})
     }
-    const respons = await deleteSale({ saleIdToDelete: saleId });
+    const respons = await deleteSales({ salesToDelete: saleIds });
     if (!respons) {
         return res.status(501).json({ success: false, message: "error while deleting sale" })
     }

@@ -11,7 +11,7 @@ router.get('/', authenticate, salesController)
     // .post('/user/:userId/editPassword', editPasswordController)
     .post('/addSale', authenticate, addSaleController)
     .put('/updatetSale/:saleId', authenticate, updateSaleController)
-    .delete('/removeSale/:saleId', authenticate, deleteSaleController)
+    .delete('/removeSale', authenticate, deleteSaleController)
     // .get('getTurnover',getTurnoverController)
 
     .all('/*', (req, res) => {

@@ -44,34 +44,27 @@ console.log(createdAt)
         return false;
     }
 };
-
-const deleteSale = async ({ saleIdToDelete }) => {
-    if (!saleIdToDelete) {
+const deleteSales = async ({ salesToDelete }) => {
+    if (!salesToDelete || salesToDelete?.length === 0) {
         return false;
     }
 
     try {
-        const saleToDelete = await Sale.findById(saleIdToDelete);
+        // Use $in operator to find and delete multiple sales
+        const deletedSales = await Sale.deleteMany({ _id: { $in: salesToDelete } });
 
-        if (!saleToDelete) {
-            console.log('Sale not found.');
-            return false;
-        }
-
-        const deletedSale = await Sale.deleteOne({ _id: saleIdToDelete });
-
-        if (deletedSale.deletedCount <= 0) {
-          
-            console.log('sale not deleted.');
+        if (deletedSales.deletedCount <= 0) {
+            console.log('No sales deleted.');
             return false;
         }
     } catch (e) {
-        console.log('Error while deleting a sale from the database', e);
+        console.log('Error while deleting sales from the database', e);
         return false;
     }
 
     return true;
 };
+
 
 async function updateSale({ saleId, saleName = null, price = null, count = null, buyPrice=null }) {
     try {
@@ -121,7 +114,7 @@ const getSale = async (saleId) => {
 
 }
 module.exports = {
-    deleteSale,
+    deleteSales,
     addNewSale,
     updateSale,
     getSale,
