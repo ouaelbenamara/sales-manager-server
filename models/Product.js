@@ -3,6 +3,15 @@ const fs = require('fs');
 const path = require('path');
 
 const addNewProduct = async ({ productName, price, buyPrice,count, filename }) => {
+    const convertFileToBase64 = (filePath) => {
+        try {
+            const fileBuffer = fs.readFileSync(filePath);
+            return fileBuffer.toString('base64');
+        } catch (error) {
+            console.error('Error converting file to Base64:', error);
+            throw error;
+        }
+    };
     console.log(productName,!productName,'asd',)
     if (productName == undefined || price === undefined || count === undefined || buyPrice===undefined||
         !productName || !price || !count || !buyPrice
@@ -15,11 +24,13 @@ const addNewProduct = async ({ productName, price, buyPrice,count, filename }) =
 
 
     try {
+        // const imageBuffer = fs.readFileSync(`db/${filename}`); // Adjust the path based on your project structure
 
+        const base64Image = convertFileToBase64(`db/${filename}`)
 
         const newProduct = new Product({
             productName,
-            productPicture: filename,
+            productPicture: base64Image,
             price,
             buyPrice,
             count

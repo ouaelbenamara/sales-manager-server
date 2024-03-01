@@ -9,7 +9,7 @@ const productsController = async (req, res) => {
     respons = respons?.map(product => ({
         _id: product._id,
         productName: product.productName,
-        productPicture: `${PICTURE_URI+product.productPicture}`, // Construct the URL to the image
+        productPicture: `${product.productPicture}`, // Construct the URL to the image
         price:product.price,
         count:product.count,
         buyPrice: product.buyPrice
@@ -73,8 +73,9 @@ const addProductController = async (req, res) => {
   
    const { filename } = req?.file;
   
-  
 
+    const { uniqueSuffix } = req
+    console.log(uniqueSuffix)
     const { productName, price, count, buyPrice } = req.body;
 
     // Check if any of the required fields is undefined
@@ -84,13 +85,13 @@ const addProductController = async (req, res) => {
         return res.status(501).json({ success: false, message: 'All fields are required' });
     }
 
-    const respons = await addNewProduct({ productName, price, count, filename, buyPrice });
+    const respons = await addNewProduct({ productName, price, count, filename: filename, buyPrice });
 
     if (!respons) {
         return res.status(502).json({ success: false, message: 'Error while adding new product' });
     }
 
-    res.status(200).json({ ...respons._doc, productPicture: `${PICTURE_URI + respons._doc.productPicture}` });
+    res.status(200).json({ ...respons._doc, productPicture: `${respons._doc.productPicture}` });
 };
 
 
