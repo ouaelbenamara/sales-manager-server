@@ -38,13 +38,13 @@ db.once('open', function () {
 });
 
 
-app.use('/home', (req, res) => {
-    res.send('Home Page');
+app.get('/', (req, res) => {
+    res.redirect('/user');
 });
-
 app.use('/product', productRoute);
 app.use('/sale', saleRoute);
 app.use('/user', userRoute);
+
 
 app.all('/*', (req, res) => {
     res.status(404).send('<h1> 404 Error page not found</h1>');
