@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.SECRET_KEY;
 
 const authenticate = async(req, res, next) => {
+    console.log('req.body:',req.body)
     try{
 console.log('entered the auth')
     
@@ -27,7 +28,7 @@ console.log('entered the auth')
 
         // console.log(Date.now() ,'   ', isVerified.exp * 1000)
     if (!isVerified) {
-        console.log('TOEKN',token)
+        console.log('invalid token',token)
         
         return res.status(404).json({ success: false, message: 'invalide token ' })
     } 
