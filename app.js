@@ -15,7 +15,7 @@ const saleRoute = require('./routes/Sale');
 const db = require('./config/connection');
 const cookieParser = require('cookie-parser');
 // Define the interval (5 hours in milliseconds)
-const interval = 4 * 60 * 1 * 1000;
+const interval = 5 * 60 * 1 * 1000;
 
 // Set up the recurring task using setInterval
 setInterval(() => {
